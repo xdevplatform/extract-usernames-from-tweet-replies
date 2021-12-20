@@ -3,6 +3,7 @@ import os
 import sys
 import argparse
 import requests
+import time
 
 from collections import Counter
 from dotenv import load_dotenv
@@ -27,7 +28,7 @@ def bearer_oauth(r):
     return r
 
 def get_parameters():
-    params = {'query': f'conversation_id:{args.tweet_id}', 'tweet.fields': 'in_reply_to_user_id,author_id,conversation_id,entities', 'max_results': '500'}
+    params = {'query': f'conversation_id:{args.tweet_id}', 'tweet.fields': 'in_reply_to_user_id,author_id,conversation_id,entities', 'max_results': '500'} 
     if args.start_time:
         params.update(start_time = args.start_time)
     if args.end_time:
@@ -36,19 +37,30 @@ def get_parameters():
     return(params, args.tweet_id)
 
 def get_replies(parameters):
-    search_url = "https://api.twitter.com/2/tweets/search/all"
-
-    response = requests.request("GET", search_url, auth=bearer_oauth, params=parameters)
-
-    if response.status_code != 200:
-        raise Exception(response.status_code, response.text)
     
-    response_payload = response.json() 
+    replies = []
 
-    if response_payload["meta"]["result_count"] == 0:
-        sys.exit("No replies to analyze")
+    search_url = "https://api.twitter.com/2/tweets/search/all"
+    request_count = 0
 
-    return response_payload
+    while True: 
+        response = requests.request("GET", search_url, auth=bearer_oauth, params=parameters)
+        if response.status_code != 200:
+            raise Exception(response.status_code, response.text)
+        response_payload = response.json()
+        meta = response_payload["meta"]
+        if meta["result_count"] == 0:
+            sys.exit("No replies to analyze")
+        for reply in response_payload["data"]:
+            replies.append(reply)
+        request_count += 1
+        if "next_token" not in meta:
+            break
+        next_token = meta["next_token"]
+        parameters.update(next_token = next_token)
+        time.sleep(1)
+
+    return replies, request_count
 
 def get_author(tweet_id):
     tweet_lookup_url = f"https://api.twitter.com/2/tweets/{tweet_id}"
@@ -67,18 +79,17 @@ def get_author(tweet_id):
     return(author_id, author_username)
 
 def get_usernames(author_id, replies):
-
+    counter = 0
     usernames = []
-    direct_replies = []
-    print("jjj", replies)
-    for reply in replies["data"]: 
+
+    for reply in replies: 
         # Only include Tweets that are in direct reply to the original Tweet
         if reply["in_reply_to_user_id"] == author_id:
-            direct_replies.append(reply)
-
-    for reply in direct_replies:
-        for mention in reply["entities"]["mentions"]:
-            usernames.append(mention["username"])
+            counter += 1
+            for mention in reply["entities"]["mentions"]:
+                usernames.append(mention["username"])
+    
+    print("Direct response count:", counter)
 
     return(usernames)
 
@@ -93,10 +104,10 @@ def count_and_sort(usernames, author_username):
 
 if __name__ == '__main__':
     parameters, original_tweet_id = get_parameters()
-    replies = get_replies(parameters)
+    replies, request_count = get_replies(parameters)
+    print("Request count:", request_count)
     author_id, author_username = get_author(original_tweet_id)
     usernames = get_usernames(author_id, replies)
     ordered_usernames = count_and_sort(usernames, author_username)
-    print(ordered_usernames, len(ordered_usernames))
-
-# Add pagination if more than 500 Tweets are returned 
+    print("Number of usernames mentioned:", len(ordered_usernames))
+    print("Ordered list of mentioned usernames:", ordered_usernames)
