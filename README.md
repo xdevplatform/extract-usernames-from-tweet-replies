@@ -1,6 +1,6 @@
 # Retrieve Tweet replies
 
-This Python script pulls all direct replies to a specified Tweet, extracts [user mentions](https://help.twitter.com/en/using-twitter/mentions-and-replies) from the replies, and returns a list of usernames ordered by most to least frequently mentioned in the replies.
+This Python script pulls all direct replies to a specified Tweet, extracts user [mentions](https://help.twitter.com/en/using-twitter/mentions-and-replies) from the replies, and returns a list of usernames ordered by most to least frequently mentioned in the replies.
 
 This script uses v2 of the Twitter API, and more specifically:
 * [Search Tweets](https://developer.twitter.com/en/docs/twitter-api/tweets/search/introduction)
