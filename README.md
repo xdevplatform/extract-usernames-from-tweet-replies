@@ -47,7 +47,7 @@ $ python3 replies.py -h
 ## Output
 
 ### Returned in the command line interface
-* Ordered dictionary containing: a list of all usernames present in the replies and the number of times each username was mentioned. 
+* Ordered dictionary containing: a list of all usernames present in the replies and the number of times each username was mentioned. Note: the username who authored the original Tweet is not included.
 * Number of replies to the Tweet.
 * Number of usernames mentioned in these replies.
 * Total request count made to the Search API to get these replies. 
