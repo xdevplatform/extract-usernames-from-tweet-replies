@@ -6,6 +6,8 @@ This script uses v2 of the Twitter API, and more specifically:
 * [Search Tweets](https://developer.twitter.com/en/docs/twitter-api/tweets/search/introduction)
 * [Tweets lookup](https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/introduction)
 
+Additional details on how to run this code, including instructions on how to replace the full-archive search endpoint with the recent search endpoint, are available [here](https://dev.to/twitterdev/retrieve-a-list-of-user-mentions-from-a-thread-of-tweet-replies-4ib6).
+
 ## Requirements 
 
 * Twitter developer account.
