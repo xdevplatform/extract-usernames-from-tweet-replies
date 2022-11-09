@@ -3,12 +3,13 @@
 This Python script pulls all direct replies to a specified Tweet, extracts user [mentions](https://help.twitter.com/en/using-twitter/mentions-and-replies) from the replies, and returns a list of usernames ordered by most to least frequently mentioned in the replies.
 
 This script uses v2 of the Twitter API, and more specifically:
+
 * [Search Tweets](https://developer.twitter.com/en/docs/twitter-api/tweets/search/introduction)
 * [Tweets lookup](https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/introduction)
 
 Additional details on how to run this code, including instructions on how to replace the full-archive search endpoint with the recent search endpoint, are available [here](https://dev.to/twitterdev/retrieve-a-list-of-user-mentions-from-a-thread-of-tweet-replies-4ib6).
 
-## Requirements 
+## Requirements
 
 * Twitter developer account.
 * Developer Project and App with access to the v2 full-archive search endpoint: [GET /2/tweets/search/all](https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all).
@@ -18,18 +19,26 @@ You can read more about getting access to all of the above in [Twitter's develop
 ## Authentication & set up
 
 Rename `.env_example` to `.env` and add the credentials for your developer App in between the `""`.
-```
+
+```text
 TWITTER_CONSUMER_KEY=""
 TWITTER_CONSUMER_SECRET=""
 TWITTER_ACCESS_TOKEN=""
 TWITTER_ACCESS_TOKEN_SECRET=""
 TWITTER_BEARER_TOKEN=""
 ```
-Don't forget to add `.env` to your `.gitignore` file to keep your credentials secure. 
 
-## Running the script 
+Don't forget to add `.env` to your `.gitignore` file to keep your credentials secure.
 
+You will also need to install the `requests` and `python-dotenv` Python modules:
+
+```shell
+$ pip3 install requests python-dotenv
 ```
+
+## Running the script
+
+```shell
 $ python3 replies.py -t <TWEET-ID>
 ```
 
@@ -41,7 +50,7 @@ $ python3 replies.py -t <TWEET-ID>
 |`-e`|End time|Optional|The newest, most recent UTC timestamp to which the replies will be provided. Format: YYYY-MM-DDTHH:mm:ssZ; for example: 2021-12-04T01:30:00Z. If unspecified, will default to [now - 30 seconds].|
 |   |   |   |   |
 
-Run the following command to see a list of available flags: 
+Run the following command to see a list of available flags:
 ```
 $ python3 replies.py -h
 ```
@@ -49,10 +58,12 @@ $ python3 replies.py -h
 ## Output
 
 ### Returned in the command line interface
+
 * Ordered dictionary containing: a list of all usernames present in the replies and the number of times each username was mentioned. Note: the username who authored the original Tweet is not included.
 * Number of replies to the Tweet.
 * Number of usernames mentioned in these replies.
-* Total request count made to the Search API to get these replies. 
+* Total request count made to the Search API to get these replies.
 
 ### Returned in a new file
+
 * `replies.txt` containing a list of Tweet IDs for the replies.
